@@ -1,0 +1,6 @@
+#define POSITION_ADDRESS 0
+#define STEPS_PER_REV_ADDRESS 1
+#define SPEED_ADDRESS 2
+#define A0_ADDRESS 3
+#define A1_ADDRESS 3
+#define A2_ADDRESS 3
