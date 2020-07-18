@@ -30,12 +30,15 @@ void manual_scan () {
       lcd.setCursor(0, 1);
       lcd.print("                ");
     } else if (butt == SELECT) {
-      write_int_EEPROM(POSITION_ADDRESS, motor_position);
+      // EEPROM.put(POSITION_ADDRESS, motor_position);
       return;
     }
     lcd.setCursor(0, 1);
     lcd.print(motor_step);
     lcd.setCursor(7, 1);
-    lcd.print(read_int_EEPROM(POSITION_ADDRESS));
+    long pos = EEPROM.read(POSITION_ADDRESS);
+//    Serial.print("printime poziciqqq");
+//    Serial.println(pos);
+    lcd.print(pos);
   }
 }

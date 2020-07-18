@@ -8,7 +8,7 @@ enum Button {
 };
 
 unsigned long lastDebounceTime = 0;
-unsigned long debounceDelay = 50;
+unsigned long debounceDelay = 5;
 
 Button lastButtonState = NONE;
 
