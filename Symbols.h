@@ -1,4 +1,10 @@
-byte aintrom[] = {
+#define SYMBOL_DOWN_ARROW 0
+#define SYMBOL_UP_ARROW 1
+#define SYMBOL_RUN_ARROW 2
+#define SYMBOL_ANGSTROM 3
+#define SYMBOL_STEPS_UNTIS 4
+
+byte angtrom[] = {
   B01110,
   B01110,
   B00000,

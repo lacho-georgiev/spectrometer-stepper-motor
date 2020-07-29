@@ -3,25 +3,34 @@
 #include <Stepper.h>
 #include "Menu.h"
 #include "EEPROM_vars.h"
-#include "EEPROM_util.h"
+#include "EEPROM.h"
 #include "Buttons.h"
 #include "Symbols.h"
+#include "LCD.h"
+#include "Decimal.h"
+
+Decimal a0, a1, a2;
+
+#include "steps_to_wavelength.h"
+#include "wavelength_to_steps.h"
 
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 
 #include "Input.h"
 
-long int motor_position;
+long motor_position;
+long wavelength;
 
 #include "Motor.h"
 
-String scan_units;
-
 #include "Scan_units.h"
+
+ScanUnits scan_units;
 
 #include "Manual_scan.h"
 
 #include "Go_to.h"
+#include "Select_scan_units.h"
 
 int addr = 0;
 
@@ -35,17 +44,19 @@ ProgramState program_state = MENU_NAVIGATION_STATE;
 int child_indx;
 TreeNode* parent_n;
 
-float a0, a1, a2;
-
 void setup() {
     init_addresses();
-    motor_position = EEPROM.read(POSITION_ADDRESS);
-    STEPS_PER_REVOLUTION = EEPROM.read(STEPS_PER_REV_ADDRESS);
-    manual_speed = EEPROM.read(SPEED_ADDRESS);
-    a0 = EEPROM.read(A0_ADDRESS);
-    a1 = EEPROM.read(A1_ADDRESS);
-    a2 = EEPROM.read(A2_ADDRESS);
-    TreeNode* ptree = &tree;
+    EEPROM.get(POSITION_ADDRESS, motor_position);
+    EEPROM.get(STEPS_PER_REV_ADDRESS, steps_per_revolution);
+    EEPROM.get(SPEED_ADDRESS,manual_speed);
+    EEPROM.get(A0_ADDRESS, a0);
+    EEPROM.get(A1_ADDRESS, a1);
+    EEPROM.get(A2_ADDRESS, a2);
+    EEPROM.get(SCAN_UNITS_ADDRESS, scan_units);
+    if (scan_units == ANGSTROM) {
+        wavelength = calc_wavelength(motor_position);
+    }
+    TreeNode* ptree = &root;
     Serial.begin(115200);
     myStepper.setSpeed(manual_speed);
     lcd.begin(16, 2);
@@ -54,9 +65,10 @@ void setup() {
     child_indx = 0;
     parent_n = ptree;
     lcd.clear();
-    lcd.createChar(0, down_arrow);
-    lcd.createChar(1, up_arrow);
-    lcd.createChar(2, run_arrow);
+    lcd.createChar(SYMBOL_DOWN_ARROW, down_arrow);
+    lcd.createChar(SYMBOL_UP_ARROW, up_arrow);
+    lcd.createChar(SYMBOL_RUN_ARROW, run_arrow);
+    lcd.createChar(SYMBOL_ANGSTROM, angtrom);
 
     pinMode(PIN_EN, OUTPUT);
 
@@ -80,7 +92,8 @@ void loop() {
         } else if (butt == RIGHT) {
             Serial.println("right");
             if (menu == "manual scan" || menu == "speed" || menu == "go_to" || menu == "steps per rev" ||
-                menu == "Enter a0" || menu == "Enter a1" || menu == "Enter a2" || menu == "Enter a3" || menu == "reset motor pos") {
+                menu == "Enter a0" || menu == "Enter a1" || menu == "Enter a2" || menu == "Enter a3" ||
+                menu == "reset motor pos" || menu == "scan units") {
                 lcd.setCursor(0, 0);
                 program_state = EXECUTE_FUNCTION_STATE;
             }
@@ -118,9 +131,9 @@ void loop() {
             lcd.noCursor();
             program_state = MENU_NAVIGATION_STATE;
         } else if (menu == "steps per rev") {
-            STEPS_PER_REVOLUTION = input_int(EEPROM.read(STEPS_PER_REV_ADDRESS));
-            EEPROM.put(STEPS_PER_REV_ADDRESS, STEPS_PER_REVOLUTION);
-            myStepper = Stepper(STEPS_PER_REVOLUTION, 10, 11, 12, 13, &pause);
+            steps_per_revolution = input_int(EEPROM.read(STEPS_PER_REV_ADDRESS));
+            EEPROM.put(STEPS_PER_REV_ADDRESS, steps_per_revolution);
+            myStepper = Stepper(steps_per_revolution, 10, 11, 12, 13, &pause);
             lcd.clear();
             lcd.noCursor();
             program_state = MENU_NAVIGATION_STATE;
@@ -131,22 +144,30 @@ void loop() {
             lcd.noCursor();
             program_state = MENU_NAVIGATION_STATE;
         } else if (menu == "Enter a0") {
-            a0 = input_float(10000, 100);
+            a0 = input_decimal(a0);
+            EEPROM.put(A0_ADDRESS, a0);
             lcd.clear();
             lcd.noCursor();
             program_state = MENU_NAVIGATION_STATE;
         } else if (menu == "Enter a1") {
-            a1 = input_float(EEPROM.read(A1_ADDRESS), 100);
+            a1 = input_decimal(a1);
+            EEPROM.put(A1_ADDRESS, a1);
             lcd.clear();
             lcd.noCursor();
             program_state = MENU_NAVIGATION_STATE;
         } else if (menu == "Enter a2") {
-            a2 = input_float(EEPROM.read(A2_ADDRESS), 100);
+            a2 = input_decimal(a2);
+            EEPROM.put(A2_ADDRESS, a2);
             lcd.clear();
             lcd.noCursor();
             program_state = MENU_NAVIGATION_STATE;
         } else if (menu == "scan units") {
-//      choose_scan_units(scan_units);
+            ScanUnits new_scan_units = select_scan_units(scan_units);
+            if (new_scan_units == ANGSTROM) {
+                wavelength = calc_wavelength(motor_position);
+            }
+            scan_units = new_scan_units;
+            EEPROM.put(SCAN_UNITS_ADDRESS, scan_units);
             lcd.clear();
             lcd.noCursor();
             program_state = MENU_NAVIGATION_STATE;

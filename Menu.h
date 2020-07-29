@@ -32,7 +32,7 @@ TreeNode menu2 = {"Settings", NULL, sizeof(menu2_children)/sizeof(*menu2_childre
 
 TreeNode* tree_children[] = { &menu0, &menu1, &menu2 };
 
-TreeNode tree = { "root", NULL, sizeof(tree_children)/sizeof(*tree_children), tree_children };
+TreeNode root = {"root", NULL, sizeof(tree_children) / sizeof(*tree_children), tree_children };
 
 void inject_parents(TreeNode* node) {
   for (int i = 0; i < (node->children_size); i++) {
