@@ -42,13 +42,15 @@ enum ProgramState {
 ProgramState program_state = MENU_NAVIGATION_STATE;
 
 int child_indx;
-TreeNode* parent_n;
+TreeNode *parent_n;
 
 void setup() {
     init_addresses();
     EEPROM.get(POSITION_ADDRESS, motor_position);
     EEPROM.get(STEPS_PER_REV_ADDRESS, steps_per_revolution);
-    EEPROM.get(SPEED_ADDRESS,manual_speed);
+    EEPROM.get(SPEED_ADDRESS, manual_speed);
+//    a2.value = 1;
+//    a2.scale = 1000;
     EEPROM.get(A0_ADDRESS, a0);
     EEPROM.get(A1_ADDRESS, a1);
     EEPROM.get(A2_ADDRESS, a2);
@@ -56,7 +58,7 @@ void setup() {
     if (scan_units == ANGSTROM) {
         wavelength = calc_wavelength(motor_position);
     }
-    TreeNode* ptree = &root;
+    TreeNode *ptree = &root;
     Serial.begin(115200);
     myStepper.setSpeed(manual_speed);
     lcd.begin(16, 2);
@@ -73,27 +75,33 @@ void setup() {
     pinMode(PIN_EN, OUTPUT);
 
     pinMode(PIN_SW, INPUT);
+
+    myStepper = Stepper(steps_per_revolution, 10, 11, 12, 13, &pause);
+    myStepper.setSpeed(manual_speed);
+
 }
 
 void loop() {
-    Button  butt = read_LCD_buttons();
+    Button butt = read_LCD_buttons();
 
     String menu = parent_n->children[child_indx]->text;
     if (program_state == MENU_NAVIGATION_STATE) {
         if (butt == UP) {
-            Serial.println(butt);
             if (child_indx > 0) child_indx--;
             lcd.clear();
         } else if (butt == DOWN) {
             if (child_indx < parent_n->children_size - 1) child_indx++;
             lcd.clear();
         } else if (butt == SELECT) {
-            Serial.println("select");
+            if (parent_n->parent != NULL) {
+                parent_n = parent_n->parent;
+                child_indx = 0;
+            }
+            lcd.clear();
         } else if (butt == RIGHT) {
-            Serial.println("right");
-            if (menu == "manual scan" || menu == "speed" || menu == "go_to" || menu == "steps per rev" ||
+            if (menu == "Manual scan" || menu == "speed" || menu == "Go to" || menu == "steps per rev" ||
                 menu == "Enter a0" || menu == "Enter a1" || menu == "Enter a2" || menu == "Enter a3" ||
-                menu == "reset motor pos" || menu == "scan units") {
+                menu == "set motor pos" || menu == "scan units") {
                 lcd.setCursor(0, 0);
                 program_state = EXECUTE_FUNCTION_STATE;
             }
@@ -102,23 +110,15 @@ void loop() {
                 child_indx = 0;
             }
             lcd.clear();
-        } else if (butt == LEFT) {
-            Serial.println("left");
-            if (parent_n->parent != NULL) {
-                parent_n = parent_n->parent;
-                child_indx = 0;
-            }
-            lcd.clear();
         }
     } else if (program_state == EXECUTE_FUNCTION_STATE) {
         lcd.setCursor(menu.length() + 1, 0);
-        lcd.write((byte)2);
-        if (menu == "manual scan") {
+        if (menu == "Manual scan") {
             manual_scan();
             lcd.clear();
             lcd.noCursor();
             program_state = MENU_NAVIGATION_STATE;
-        } else if (menu == "go_to") {
+        } else if (menu == "Go to") {
             go_on_position();
             lcd.clear();
             lcd.noCursor();
@@ -134,11 +134,13 @@ void loop() {
             steps_per_revolution = input_int(EEPROM.read(STEPS_PER_REV_ADDRESS));
             EEPROM.put(STEPS_PER_REV_ADDRESS, steps_per_revolution);
             myStepper = Stepper(steps_per_revolution, 10, 11, 12, 13, &pause);
+            myStepper.setSpeed(manual_speed);
             lcd.clear();
             lcd.noCursor();
             program_state = MENU_NAVIGATION_STATE;
-        } else if (menu == "reset motor pos") {
-            motor_position = 0;
+        } else if (menu == "set motor pos") {
+            print_scan_units(STEPS);
+            motor_position = input_long(motor_position);
             EEPROM.put(POSITION_ADDRESS, motor_position);
             lcd.clear();
             lcd.noCursor();
@@ -180,15 +182,4 @@ void loop() {
     lcd.setCursor(0, 0);
 
     lcd.print(menu);
-    if (program_state == MENU_NAVIGATION_STATE) {
-        if (child_indx == parent_n->children_size - 1) {
-            lcd.setCursor(menu.length() + 1, 0);
-            lcd.write((byte)0);
-        }
-        if (child_indx == 0) {
-            lcd.setCursor(menu.length() + 1, 0);
-            lcd.write((byte)1);
-        }
-    }
-
 }

@@ -6,8 +6,8 @@
 #define LAMBDA_MIN 4000 // in Angstrom
 #define LAMBDA_MAX 10000 // in Angstrom
 
-int calc_wavelength (long s, int lambda_min, int lambda_max) {
-    int lambda = (lambda_max + lambda_min) / 2;
+long calc_wavelength (long s, long lambda_min, long lambda_max) {
+    long lambda = (lambda_max + lambda_min) / 2;
     if (lambda == lambda_min || lambda == lambda_max) {
         return lambda;
     }
@@ -21,7 +21,7 @@ int calc_wavelength (long s, int lambda_min, int lambda_max) {
     }
 }
 
-int calc_wavelength (long s) {
+long calc_wavelength (long s) {
     return calc_wavelength(s, LAMBDA_MIN, LAMBDA_MAX);
 }
 

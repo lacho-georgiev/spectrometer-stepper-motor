@@ -6,33 +6,33 @@ struct TreeNode {
 };
 
 
-TreeNode item10 = { "manual scan", NULL, 0, NULL };
-TreeNode item11 = { "go_to", NULL, 0, NULL };
+TreeNode item_manual_scan = {"Manual scan", NULL, 0, NULL };
+TreeNode item_go_to = {"Go to", NULL, 0, NULL };
 
-TreeNode* menu0_children[] = { &item10, &item11 };
+//TreeNode* menu0_children[] = {&menu0, &item11 };
 
-TreeNode menu0 = { "Manual", NULL, sizeof(menu0_children)/sizeof(*menu0_children), menu0_children };
+//TreeNode menu0 = { "Manual", NULL, sizeof(menu0_children)/sizeof(*menu0_children), menu0_children };
 
-TreeNode item20 = { "Enter a0", NULL, 0, NULL };
-TreeNode item21 = { "Enter a1", NULL, 0, NULL };
-TreeNode item22 = { "Enter a2", NULL, 0, NULL };
+TreeNode item_a0 = {"Enter a0", NULL, 0, NULL };
+TreeNode item_a1 = {"Enter a1", NULL, 0, NULL };
+TreeNode item_a2 = {"Enter a2", NULL, 0, NULL };
 
-TreeNode* menu1_children[] = { &item20, &item21, &item22 };
+TreeNode* menu_calibration_children[] = {&item_a0, &item_a1, &item_a2 };
 
-TreeNode menu1 = {"Calibration", NULL, sizeof(menu1_children)/sizeof(*menu1_children), menu1_children };
+TreeNode menu_calibration = {"Calibration", NULL, sizeof(menu_calibration_children) / sizeof(*menu_calibration_children), menu_calibration_children };
 
-TreeNode item30 = { "speed", NULL, 0, NULL };
-TreeNode item31 = { "reset motor pos", NULL, 0, NULL };
-TreeNode item32 = { "steps per rev", NULL, 0, NULL };
-TreeNode item33 = { "scan units", NULL, 0, NULL };
+TreeNode item_scan_units = {"scan units", NULL, 0, NULL };
+TreeNode item_set_motor_pos = {"set motor pos", NULL, 0, NULL };
+TreeNode item_SPR = {"steps per rev", NULL, 0, NULL };
+TreeNode item_speed = {"speed", NULL, 0, NULL };
 
-TreeNode* menu2_children[] = { &item30, &item31, &item32, &item33 };
+TreeNode* menu_settings_children[] = { &item_scan_units, &item_set_motor_pos, &item_speed, &item_SPR };
 
-TreeNode menu2 = {"Settings", NULL, sizeof(menu2_children)/sizeof(*menu2_children), menu2_children };
+TreeNode menu_settings = {"Settings", NULL, sizeof(menu_settings_children) / sizeof(*menu_settings_children), menu_settings_children };
 
-TreeNode* tree_children[] = { &menu0, &menu1, &menu2 };
+TreeNode* root_children[] = {&item_manual_scan, &item_go_to, &menu_settings, &menu_calibration };
 
-TreeNode root = {"root", NULL, sizeof(tree_children) / sizeof(*tree_children), tree_children };
+TreeNode root = {"root", NULL, sizeof(root_children) / sizeof(*root_children), root_children };
 
 void inject_parents(TreeNode* node) {
   for (int i = 0; i < (node->children_size); i++) {

@@ -5,7 +5,7 @@ struct Decimal {
     long value;
     long scale;
     float to_float() {
-        return float(this->value)/this->scale;
+        return float(this->value)/float(this->scale);
     }
 };
 

@@ -65,19 +65,14 @@ Button getButton() {
     Button button;
     if (read < 195) {
         button = RIGHT;
-        Serial.println("RIGHT");
     } else if (read < 270) {
         button = DOWN;
-        Serial.println("DOWN");
     } else if (read < 357) {
         button = UP;
-        Serial.println("UP");
     } else if (read < 529) {
         button = LEFT;
-        Serial.println("LEFT");
     } else if (read < 738) {
         button = SELECT;
-        Serial.println("SELECT");
     } else if (read < 902) {
         button = RESET;
     } else {

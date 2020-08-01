@@ -26,14 +26,12 @@ void do_steps (long steps) { // steps can be <0 because of the direction
   delay(100); 
   long done_steps = (steps - myStepper.step(steps)); // steps returns left_steps
   
-  Serial.print("done_steps: ");
-  Serial.println(done_steps);
-  
   motor_position += done_steps;
   digitalWrite(PIN_EN, LOW);
   delay(100);
-  Serial.print("motor_pos: ");
-  Serial.println(motor_position);
+
+//  Serial.print("motor_pos: ");
+//  Serial.println(motor_position);
 
   EEPROM.put(POSITION_ADDRESS, motor_position);
 }
