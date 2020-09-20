@@ -4,7 +4,7 @@ void go_on_position() {
     print_scan_units(scan_units);
     long go_on_position;
     if (scan_units == ANGSTROM) {
-        long go_on_wavelength = input_long(wavelength);
+        long go_on_wavelength = input_long(calc_wavelength(motor_position));
         go_on_position = calc_steps(go_on_wavelength);
     } else {
         go_on_position = input_long(motor_position);

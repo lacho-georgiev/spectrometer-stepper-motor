@@ -6,8 +6,20 @@
 long calc_delta_steps(long delta) {
     long delta_steps;
     if (scan_units == ANGSTROM) {
+        wavelength = calc_wavelength(motor_position);
         long go_to_steps = calc_steps(wavelength + delta);
         delta_steps = go_to_steps - motor_position;
+        Serial.print("MC: goto: ");
+        Serial.println(go_to_steps);
+        Serial.print("MC: bf_RESULT: ");
+        Serial.println(calc_wavelength(go_to_steps));
+        Serial.print("MC: RESULT: ");
+        Serial.println(calc_wavelength(delta_steps + motor_position));
+        Serial.print("MC: wavelength: ");
+        Serial.println(wavelength);
+        Serial.print("MC: wavelength + delta: ");
+        Serial.println(wavelength + delta);
+
     } else {
         delta_steps = delta;
     }

@@ -21,15 +21,17 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 long motor_position;
 long wavelength;
 
-#include "Motor.h"
-
 #include "Scan_units.h"
 
 ScanUnits scan_units;
 
-#include "Manual_scan.h"
+long sending_steps_interval;
 
+#include "Motor.h"
+
+#include "Manual_scan.h"
 #include "Go_to.h"
+
 #include "Select_scan_units.h"
 
 int addr = 0;
@@ -47,12 +49,15 @@ TreeNode *parent_n;
 void setup() {
     init_addresses();
     EEPROM.get(POSITION_ADDRESS, motor_position);
+    EEPROM.put(POSITION_ADDRESS, 0);
+    wavelength = calc_wavelength(motor_position);
     EEPROM.get(STEPS_PER_REV_ADDRESS, steps_per_revolution);
     EEPROM.get(SPEED_ADDRESS, manual_speed);
-//    a2.value = 1;
-//    a2.scale = 1000;
     EEPROM.get(A0_ADDRESS, a0);
     EEPROM.get(A1_ADDRESS, a1);
+    EEPROM.get(SENDING_STEPS_INTTERVALS_ADDRESS, sending_steps_interval);
+    a0.value = 0;
+    a0.scale = 1;
     EEPROM.get(A2_ADDRESS, a2);
     EEPROM.get(SCAN_UNITS_ADDRESS, scan_units);
     if (scan_units == ANGSTROM) {
@@ -60,6 +65,7 @@ void setup() {
     }
     TreeNode *ptree = &root;
     Serial.begin(115200);
+    Serial.println("version-1.0.5");
     myStepper.setSpeed(manual_speed);
     lcd.begin(16, 2);
     lcd.setCursor(0, 0);
@@ -83,9 +89,11 @@ void setup() {
 
 void loop() {
     Button butt = read_LCD_buttons();
-
     String menu = parent_n->children[child_indx]->text;
     if (program_state == MENU_NAVIGATION_STATE) {
+        if (menu == "scan units") {
+            print_scan_units(scan_units);
+        }
         if (butt == UP) {
             if (child_indx > 0) child_indx--;
             lcd.clear();
@@ -101,7 +109,7 @@ void loop() {
         } else if (butt == RIGHT) {
             if (menu == "Manual scan" || menu == "speed" || menu == "Go to" || menu == "steps per rev" ||
                 menu == "Enter a0" || menu == "Enter a1" || menu == "Enter a2" || menu == "Enter a3" ||
-                menu == "set motor pos" || menu == "scan units") {
+                menu == "set motor pos" || menu == "intervals" || menu == "set wavelength" || menu == "scan units") {
                 lcd.setCursor(0, 0);
                 program_state = EXECUTE_FUNCTION_STATE;
             }
@@ -142,6 +150,21 @@ void loop() {
             print_scan_units(STEPS);
             motor_position = input_long(motor_position);
             EEPROM.put(POSITION_ADDRESS, motor_position);
+            lcd.clear();
+            lcd.noCursor();
+            program_state = MENU_NAVIGATION_STATE;
+        } else if (menu == "set wavelength") {
+            print_scan_units(ANGSTROM);
+            wavelength = input_long(calc_wavelength(motor_position));
+            motor_position = calc_steps(wavelength);
+            EEPROM.put(POSITION_ADDRESS, motor_position);
+            lcd.clear();
+            lcd.noCursor();
+            program_state = MENU_NAVIGATION_STATE;
+        } else if (menu == "intervals") {
+            print_scan_units(scan_units);
+            sending_steps_interval = input_int(sending_steps_interval);
+            EEPROM.put(SENDING_STEPS_INTTERVALS_ADDRESS, sending_steps_interval);
             lcd.clear();
             lcd.noCursor();
             program_state = MENU_NAVIGATION_STATE;

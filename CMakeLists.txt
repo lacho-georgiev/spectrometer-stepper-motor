@@ -30,7 +30,7 @@ set(${PROJECT_NAME}_SKETCH spectro_stepper_motor.ino)
 
 #### Additional settings for programmer. From programmers.txt
 set(${PROJECT_NAME}_PROGRAMMER arduinoisp)
-set(${PROJECT_NAME}_PORT COM3)
+set(${PROJECT_NAME}_PORT /dev/cu.usbserial-1430)
 set(uno.upload.speed 115200)
 
 ## Verbose build process

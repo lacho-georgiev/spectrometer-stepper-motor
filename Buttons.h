@@ -80,10 +80,4 @@ Button getButton() {
     }
     return button;
 }
-
-//    Button button = NONE;
-//    if (read - lastRead > 50 ) {
-//        lastButtonState = NONE;
-//        return NONE;
-//    }
 #endif

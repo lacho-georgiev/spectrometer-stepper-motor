@@ -22,11 +22,13 @@ TreeNode* menu_calibration_children[] = {&item_a0, &item_a1, &item_a2 };
 TreeNode menu_calibration = {"Calibration", NULL, sizeof(menu_calibration_children) / sizeof(*menu_calibration_children), menu_calibration_children };
 
 TreeNode item_scan_units = {"scan units", NULL, 0, NULL };
+TreeNode item_set_wavelength = {"set wavelength", NULL, 0, NULL };
+TreeNode item_intervals = {"intervals", NULL, 0, NULL };
 TreeNode item_set_motor_pos = {"set motor pos", NULL, 0, NULL };
 TreeNode item_SPR = {"steps per rev", NULL, 0, NULL };
 TreeNode item_speed = {"speed", NULL, 0, NULL };
 
-TreeNode* menu_settings_children[] = { &item_scan_units, &item_set_motor_pos, &item_speed, &item_SPR };
+TreeNode* menu_settings_children[] = { &item_scan_units,  &item_set_wavelength, &item_intervals, &item_set_motor_pos, &item_speed, &item_SPR };
 
 TreeNode menu_settings = {"Settings", NULL, sizeof(menu_settings_children) / sizeof(*menu_settings_children), menu_settings_children };
 

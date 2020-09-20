@@ -3,8 +3,8 @@
 #ifndef SPECTRO_STEPPER_MOTOR_WAVELENGTH_TO_STEPS_H
 #define SPECTRO_STEPPER_MOTOR_WAVELENGTH_TO_STEPS_H
 
-#define LAMBDA_MIN 4000 // in Angstrom
-#define LAMBDA_MAX 10000 // in Angstrom
+#define LAMBDA_MIN 0 // in Angstrom
+#define LAMBDA_MAX 20000 // in Angstrom
 
 long calc_wavelength (long s, long lambda_min, long lambda_max) {
     long lambda = (lambda_max + lambda_min) / 2;
