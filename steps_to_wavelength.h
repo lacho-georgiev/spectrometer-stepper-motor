@@ -2,20 +2,18 @@
 
 #ifndef SPECTRO_STEPPER_MOTOR_STEPS_TO_WAVELENGTH_H
 #define SPECTRO_STEPPER_MOTOR_STEPS_TO_WAVELENGTH_H
-// its expected that a0, a1, a2 are initialized global variables
 
-long calc_steps (int lambda) {
-    float d1 = (float)lambda * (float)lambda * a2.to_float();
-    float d2 = (float)lambda * a1.to_float();
-    float d3 = a0.to_float();
-//    Serial.print("d1: ");
-//    Serial.println(d1);
-//    Serial.print("d2: ");
-//    Serial.println(d2);
-//    Serial.print("d3: ");
-//    Serial.println(d3);
+double calc_steps_double (long lambda) {
+    double d1 = (double)lambda * (double)lambda * a2.to_double();
+    double d2 = (double)lambda * a1.to_double();
+    double d3 = a0.to_double();
     return d1 + d2 + d3;
 }
 
+// its expected that a0, a1, a2 are initialized global variables
+///y = -0.000000005 * x.^2 + 0.07*x + -20000
+long calc_steps (long lambda) {
+    return calc_steps_double(lambda);
+}
 
 #endif //SPECTRO_STEPPER_MOTOR_STEPS_TO_WAVELENGTH_H

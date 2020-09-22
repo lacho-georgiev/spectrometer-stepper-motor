@@ -23,7 +23,7 @@ TreeNode menu_calibration = {"Calibration", NULL, sizeof(menu_calibration_childr
 
 TreeNode item_scan_units = {"scan units", NULL, 0, NULL };
 TreeNode item_set_wavelength = {"set wavelength", NULL, 0, NULL };
-TreeNode item_intervals = {"intervals", NULL, 0, NULL };
+TreeNode item_intervals = {"output_intervals", NULL, 0, NULL };
 TreeNode item_set_motor_pos = {"set motor pos", NULL, 0, NULL };
 TreeNode item_SPR = {"steps per rev", NULL, 0, NULL };
 TreeNode item_speed = {"speed", NULL, 0, NULL };

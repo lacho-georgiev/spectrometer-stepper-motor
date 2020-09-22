@@ -56,8 +56,8 @@ void setup() {
     EEPROM.get(A0_ADDRESS, a0);
     EEPROM.get(A1_ADDRESS, a1);
     EEPROM.get(SENDING_STEPS_INTTERVALS_ADDRESS, sending_steps_interval);
-    a0.value = 0;
-    a0.scale = 1;
+//    a0.value = 0;
+//    a0.scale = 1;
     EEPROM.get(A2_ADDRESS, a2);
     EEPROM.get(SCAN_UNITS_ADDRESS, scan_units);
     if (scan_units == ANGSTROM) {
@@ -65,7 +65,7 @@ void setup() {
     }
     TreeNode *ptree = &root;
     Serial.begin(115200);
-    Serial.println("version-1.0.5");
+    Serial.println("version-1.0.33");
     myStepper.setSpeed(manual_speed);
     lcd.begin(16, 2);
     lcd.setCursor(0, 0);
@@ -155,13 +155,25 @@ void loop() {
             program_state = MENU_NAVIGATION_STATE;
         } else if (menu == "set wavelength") {
             print_scan_units(ANGSTROM);
+
+            Serial.print("old_motor_position: ");
+            Serial.println(motor_position);
+            Serial.print("old_wavelength: ");
+            Serial.println(calc_wavelength(motor_position));
+
             wavelength = input_long(calc_wavelength(motor_position));
             motor_position = calc_steps(wavelength);
+
+            Serial.print("new_motor_position: ");
+            Serial.println(motor_position);
+            Serial.print("new_wavelength: ");
+            Serial.println(calc_wavelength(motor_position));
+
             EEPROM.put(POSITION_ADDRESS, motor_position);
             lcd.clear();
             lcd.noCursor();
             program_state = MENU_NAVIGATION_STATE;
-        } else if (menu == "intervals") {
+        } else if (menu == "output_intervals") {
             print_scan_units(scan_units);
             sending_steps_interval = input_int(sending_steps_interval);
             EEPROM.put(SENDING_STEPS_INTTERVALS_ADDRESS, sending_steps_interval);

@@ -15,6 +15,14 @@ int count_digits(long a) {
     return br;
 }
 
+int count_float_digits (long a, long scale) {
+    if (a < scale)
+        return count_digits(scale);
+    return count_digits(a);
+
+
+}
+
 long pow10(int pow) {
     long powed = 1;
     for (int i = 0; i < pow; i++) {
@@ -24,9 +32,9 @@ long pow10(int pow) {
     return powed;
 }
 
-int get_sign_indx(long cur, bool with_fp) {
+int get_sign_indx(long cur, bool with_fp, long scale) {
     if (with_fp) {
-        return (MAX_DISP_WIDTH - (count_digits(cur) + 2)); // 2 -> '.' and ' '
+        return (MAX_DISP_WIDTH - (count_float_digits(cur, scale) + 2)); // 2 -> '.' and ' '
     } else {
         return (MAX_DISP_WIDTH - (count_digits(cur) + 1)); // 1 -> ' ' before sign
     }
@@ -45,6 +53,8 @@ long get_scale(char buffer[], int indx) {
 }
 
 void format_char_array(char (&buffer)[MAX_DISP_WIDTH + 1], long cur, int fp_indx, long fp_scale, char sign) {
+    long signed_cur = cur;
+    cur = abs(cur);
     long cur_right_fp = cur % fp_scale;
     long cur_left_fp = cur / fp_scale;
     for (int i = MAX_DISP_WIDTH; i > fp_indx; i--) {
@@ -145,17 +155,16 @@ long input(long cur, int width, bool with_fp, long &fp_scale) {
             }
         } else if (butt == UP) {
             scale = get_scale(buffer, indx);
-            Serial.print("indx: ");
-            Serial.println(indx);
-            Serial.print("sign_indx: ");
-            Serial.println(get_sign_indx(cur, with_fp));
+            Serial.println(get_sign_indx(cur, with_fp, fp_scale));
             if (with_fp && indx == fp_indx && fp_indx > 1) {
                 fp_indx--;
                 indx--;
                 fp_scale *= 10;
-            } else if (indx == get_sign_indx(cur, with_fp)) {
-                Serial.print("sign: ");
-                Serial.println(sign);
+                Serial.print("scale: ");
+                Serial.println(fp_scale);
+                Serial.print("cur: ");
+                Serial.println(cur);
+            } else if (indx == get_sign_indx(cur, with_fp, fp_scale)) {
                 if (sign == '-') {
                     sign = '+';
                 } else {
@@ -178,7 +187,11 @@ long input(long cur, int width, bool with_fp, long &fp_scale) {
                 fp_indx++;
                 indx++;
                 fp_scale /= 10;
-            } else if (indx == get_sign_indx(cur, with_fp)) {
+                Serial.print("scale: ");
+                Serial.println(fp_scale);
+                Serial.print("cur: ");
+                Serial.println(cur);
+            } else if (indx == get_sign_indx(cur, with_fp, fp_scale)) {
                 if (sign == '-') {
                     sign = '+';
                 } else {
@@ -186,8 +199,6 @@ long input(long cur, int width, bool with_fp, long &fp_scale) {
                 }
             } else if (cur >= scale && cur + scale > -MAX_VALUE) {
                 cur -= scale;
-                Serial.print("bf_ch: ");
-                Serial.println(bf_change);
             }
             if (with_fp) {
                 format_char_array(buffer, cur_sign * cur, fp_indx, fp_scale, sign);
